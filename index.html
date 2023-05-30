@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ap_name}}</title>
+
+    
+</head>
+
+<body>
+    <div class="container">
+    <h1>HotDogBot v1</h1>
+    
+    <form action="/" method="POST" id="form_id">
+        <table>
+            <tr>
+                <td></td>
+                <td><input type="submit" name="forward" id="forward" text="forward" value="forward"/></td>
+                <td><input type="submit" name="Pen up" id="penup" text="Pen Up" value="penup" accesskey="s" /></td>
+            </tr>
+            <tr>
+                <td><input type="submit" name="left" id="left" value="left" /></td>
+                <td><input type="submit" name="Stop" id="stop" value="stop" /></td>
+                <td><input type="submit" name="right" id="right" value="right" /></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="submit" name="Backward" id="backward" value="backward" /></td>
+                <td><input type="submit" name="Pen down" id="pendown" value="pendown"  accesskey="a"/></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="submit" name="ledon" id="ledon" value="ledon"  /></td>
+                <td><input type="submit" name="ledoff" id="ledoff" value="ledoff" /></td>
+            </tr>
+        </table>
+    Press button on controller to connect.
+<div id="axes" style="display: flex; flex-direction: column;"></div>
+<script>
+window.addEventListener('gamepadconnected', (event) => {
+  const update = () => {
+    const output = document.getElementById('axes');
+    output.innerHTML = ''; // clear the output
+
+    for (const gamepad of navigator.getGamepads()) {
+      if (!gamepad) continue;
+      for (const [index, axis] of gamepad.axes.entries()) {
+        output.insertAdjacentHTML('beforeend',
+          `<label>${gamepad.index}, ${index}
+             <progress value=${axis * 0.5 + 0.5}></progress>
+           </label>`);
+      }
+    }
+    requestAnimationFrame(update);
+  };
+  update();
+});
+</script>
+Press button on controller to connect.
+<div id="buttons" style="display: flex; flex-direction: column;"></div>
+<script>
+window.addEventListener('gamepadconnected', (event) => {
+  const update = () => {
+    const output = document.getElementById('buttons');
+    output.innerHTML = ''; // clear the output
+
+    for (const gamepad of navigator.getGamepads()) {
+      if (!gamepad) continue;
+      for (const [index, button] of gamepad.buttons.entries()) {
+        output.insertAdjacentHTML('beforeend',
+          `<label>${gamepad.index}, ${index}
+             <progress value=${button.value}></progress>
+             ${button.touched ? 'touched' : ''}
+             ${button.pressed ? 'pressed' : ''}
+           </label>`);
+      }
+    }
+    requestAnimationFrame(update);
+  };
+  update();
+});
+</script>
+    </form>
+    </div>
+    
+</body>
+</html>
