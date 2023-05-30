@@ -21,3 +21,9 @@ values are assigned from specific gamepad variable to specific PWM pin output
 
 ~sudo~ 
 gamepad val = +1 ~~ servo 1 = 90deg
+
+
+
+https://github.com/kevinmcaleer/Inventor_Arm
+this git has a very close example of where the program could end up. 
+if you could map gamepad input values to slider values and have them execute in real time. 
