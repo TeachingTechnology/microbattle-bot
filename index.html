@@ -1,89 +1,259 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ap_name}}</title>
+	<head>
+		<style>
+			body {
+				font-family: monospace;
+			}
+		</style>
 
-    
-</head>
+		<script type="module">
+			// TODO
+			// - button input/feedback
+			// - manual entry
 
-<body>
-    <div class="container">
-    <h1>HotDogBot v1</h1>
-    
-    <form action="/" method="POST" id="form_id">
-        <table>
-            <tr>
-                <td></td>
-                <td><input type="submit" name="forward" id="forward" text="forward" value="forward"/></td>
-                <td><input type="submit" name="Pen up" id="penup" text="Pen Up" value="penup" accesskey="s" /></td>
-            </tr>
-            <tr>
-                <td><input type="submit" name="left" id="left" value="left" /></td>
-                <td><input type="submit" name="Stop" id="stop" value="stop" /></td>
-                <td><input type="submit" name="right" id="right" value="right" /></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td><input type="submit" name="Backward" id="backward" value="backward" /></td>
-                <td><input type="submit" name="Pen down" id="pendown" value="pendown"  accesskey="a"/></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td><input type="submit" name="ledon" id="ledon" value="ledon"  /></td>
-                <td><input type="submit" name="ledoff" id="ledoff" value="ledoff" /></td>
-            </tr>
-        </table>
-    Press button on controller to connect.
-<div id="axes" style="display: flex; flex-direction: column;"></div>
-<script>
-window.addEventListener('gamepadconnected', (event) => {
-  const update = () => {
-    const output = document.getElementById('axes');
-    output.innerHTML = ''; // clear the output
+			const UPDATE_PERIOD = 100; // ms
+			const DECIMAL_PLACES = 3;
 
-    for (const gamepad of navigator.getGamepads()) {
-      if (!gamepad) continue;
-      for (const [index, axis] of gamepad.axes.entries()) {
-        output.insertAdjacentHTML('beforeend',
-          `<label>${gamepad.index}, ${index}
-             <progress value=${axis * 0.5 + 0.5}></progress>
-           </label>`);
-      }
-    }
-    requestAnimationFrame(update);
-  };
-  update();
-});
-</script>
-Press button on controller to connect.
-<div id="buttons" style="display: flex; flex-direction: column;"></div>
-<script>
-window.addEventListener('gamepadconnected', (event) => {
-  const update = () => {
-    const output = document.getElementById('buttons');
-    output.innerHTML = ''; // clear the output
+			const x_progress = document.getElementById('progress-x');
+			const y_progress = document.getElementById('progress-y');
 
-    for (const gamepad of navigator.getGamepads()) {
-      if (!gamepad) continue;
-      for (const [index, button] of gamepad.buttons.entries()) {
-        output.insertAdjacentHTML('beforeend',
-          `<label>${gamepad.index}, ${index}
-             <progress value=${button.value}></progress>
-             ${button.touched ? 'touched' : ''}
-             ${button.pressed ? 'pressed' : ''}
-           </label>`);
-      }
-    }
-    requestAnimationFrame(update);
-  };
-  update();
-});
-</script>
-    </form>
-    </div>
-    
-</body>
+			const x_value = document.getElementById('x-value');
+			const y_value = document.getElementById('y-value');
+
+			const x_deadzone = document.getElementById('x-deadzone');
+			const y_deadzone = document.getElementById('y-deadzone');
+
+			const controller_select = document.getElementById('controller-select');
+
+			const x_axis = document.getElementById('x-axis');
+			const y_axis = document.getElementById('y-axis');
+
+			const state = {
+				x: 0,
+				y: 0
+			};
+
+			const keyboard = {
+				l: 0,
+				r: 0,
+				u: 0,
+				d: 0
+			};
+
+			let gamepad;
+
+			function update_ui() {
+				x_value.textContent = state.x.toFixed(DECIMAL_PLACES);
+				y_value.textContent = state.y.toFixed(DECIMAL_PLACES);
+				x_progress.value = state.x * 0.5 + 0.5;
+				y_progress.value = state.y * 0.5 + 0.5;
+			}
+
+			function update_state_from_keyboard() {
+				state.x = keyboard.r - keyboard.l;
+				state.y = keyboard.d - keyboard.u;
+				update_ui();
+			}
+
+			// handle a key being pressed/released, value should be 0 for
+			// key up and 1 for key down.
+			function key_change(e, value) {
+				// always update the saved keyboard state
+				switch (e.code) {
+					case "KeyA":
+					case "ArrowLeft":  keyboard.l = value; break;
+					case "KeyD":
+					case "ArrowRight": keyboard.r = value; break;
+					case "KeyS":
+					case "ArrowDown":  keyboard.d = value; break;
+					case "KeyW":
+					case "ArrowUp":    keyboard.u = value; break;
+				}
+				// only change state if the keyboard is the current controller
+				if (!gamepad) {
+					update_state_from_keyboard();
+				}
+			}
+			const key_down = (e) => key_change(e, 1);
+			const key_up   = (e) => key_change(e, 0);
+
+			// handle gamepad connected/disconnected events
+			function gamepad_connection(e) {
+				// had to delay this as the array returned from getGamepads wasn't
+				// being updated fast enough when the controller was disconnected
+				setTimeout(() =>
+					{
+						const gamepads = navigator.getGamepads();
+						const prev_selected = controller_select.value;
+
+						// remove all current gamepad options (not keyboard)
+						while (controller_select.children.length !== 1) {
+							controller_select.removeChild(controller_select.children[1]);
+						}
+
+						// re-add gamepad options from the currently available
+						// gamepads
+						for (let i = 0; i !== gamepads.length; ++i) {
+							const option = document.createElement('option');
+							option.value = gamepads[i].index;
+							option.text = `${gamepads[i].id} (${gamepads[i].index})`;
+
+							controller_select.appendChild(option);
+						}
+
+						// try to keep current controller selection, otherwise
+						// default to the keyboard
+						controller_select.value = prev_selected;
+						if (!controller_select.value) {
+							controller_select.value = 'keyboard';
+						}
+
+						// manually trigger selection event
+						controller_select.dispatchEvent(new Event('change'));
+					},
+					100
+				);
+			}
+
+			// get gamepad by its unique index, index must be a Number
+			function get_gamepad_by_index(index) {
+				const gamepads = navigator.getGamepads();
+				for (let i = 0; i !== gamepads.length; ++i) {
+					if (gamepads[i].index === index) return gamepads[i];
+				}
+				return undefined;
+			}
+
+			// handle a new controller being selected
+			function gamepad_select(event) {
+				if (controller_select.value === 'keyboard') {
+					gamepad = undefined;
+					x_axis.disabled = true;
+					y_axis.disabled = true;
+					update_state_from_keyboard();
+				} else {
+					gamepad = get_gamepad_by_index(parseInt(controller_select.value));
+					update_axis(x_axis);
+					update_axis(y_axis);
+					x_axis.value = 0;
+					y_axis.value = 1;
+				}
+				// make the select element not active so that keyboard input
+				// doesn't accidentally change the controller
+				document.activeElement.blur();
+			}
+
+			function update_axis(axis) {
+					while (axis.children.length !== 0) {
+						axis.removeChild(axis.children[0]);
+					}
+
+					for (let i = 0; i !== gamepad.axes.length; ++i) {
+						const option = document.createElement('option');
+						option.value = i;
+						option.text = i;
+						axis.appendChild(option);
+					}
+
+					axis.disabled = false;
+			}
+
+			// handle input from the gamepad
+			// immediately invoked to start update callbacks
+			(function gamepad_update() {
+				if (gamepad !== undefined) {
+					let x = gamepad.axes[x_axis.value];
+					let y = gamepad.axes[y_axis.value];
+					x = Math.abs(x) >= x_deadzone.valueAsNumber ? x : 0;
+					y = Math.abs(y) >= y_deadzone.valueAsNumber ? y : 0;
+					state.x = x;
+					state.y = y;
+					update_ui();
+				}
+
+				requestAnimationFrame(gamepad_update);
+			})();
+
+			// register required listeners
+			window.addEventListener('keydown', key_down);
+			window.addEventListener('keyup', key_up);
+			window.addEventListener('gamepadconnected', gamepad_connection);
+			window.addEventListener('gamepaddisconnected', gamepad_connection);
+
+			// register and fire controller selection event for startup
+			controller_select.addEventListener('change', gamepad_select);
+			controller_select.dispatchEvent(new Event('change'));
+
+			// used to drop responses from the fetch that's being used to send
+			// state to the robot
+			function noop() {}
+
+			while (true) {
+				// send state to the robot
+				fetch(`${document.baseURI}state/${state.x}/${state.y}`).then(noop, noop);
+				// wait the alloted update period (so we don't spam the robot)
+				await new Promise(r => setTimeout(r, UPDATE_PERIOD));
+			}
+		</script>
+	</head>
+
+    <body>
+		<h1>BattleBot Dashboard</h1>
+
+		If your controller isn't showing up try pushing a button on it.
+
+		<div>
+			<h3>Controller</h3>
+			<select id="controller-select">
+				<option value="keyboard">Keyboard</option>
+			</select>
+		</div>
+
+		<div>
+			<h3>Axes</h3>
+
+			<div>
+				<label>X: </label>
+				<progress id="progress-x"></progress>
+				<label id="x-value">0.000</label>
+			</div>
+
+			<div>
+				<label>Y: </label>
+				<progress id="progress-y"></progress>
+				<label id="y-value">0.000</label>
+			</div>
+		</div>
+
+		<div>
+			<h3>Deadzone Radii</h3>
+
+			<div>
+				<label>X: </label>
+				<input type="number" id="x-deadzone" min="0" max="1" step="0.01" value="0.1">
+			</div>
+
+			<div>
+				<label>Y: </label>
+				<input type="number" id="y-deadzone" min="0" max="1" step="0.01" value="0.1">
+			</div>
+		</div>
+
+		<div>
+			<h3>Axes Selection</h3>
+
+			<div>
+				<label>X: </label>
+				<select id="x-axis" disabled>
+				</select>
+			</div>
+
+			<div>
+				<label>Y: </label>
+				<select id="y-axis" disabled>
+				</select>
+			</div>
+		</div>
+    </body>
 </html>
