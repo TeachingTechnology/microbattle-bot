@@ -1,0 +1,48 @@
+:root {
+	--axis-diameter: 1.5em;
+	--axis-radius: calc(var(--axis-diameter) / 2);
+	--button-height: 1.5em;
+	--button-width: calc(2.7 * var(--button-height));
+}
+
+body {
+	font-family: monospace;
+}
+
+.axis-background {
+	display: inline-block;
+	width: 20em;
+	height: var(--axis-diamater);
+	border-radius: var(--axis-radius);
+	background-color: lightgrey;
+}
+
+.axis-dot-holder {
+	margin-left: var(--axis-radius);
+	margin-right: var(--axis-radius);
+	width: auto;
+	height: auto;
+}
+
+.axis-dot {
+	background-color: black;
+	width: var(--axis-diameter);
+	height: var(--axis-diameter);
+	border-radius: var(--axis-radius);
+	position: relative;
+	margin-left: calc(-1 * var(--axis-radius));
+	left: 50%;
+}
+
+.button {
+	display: inline-block;
+	background-color: lightgray;
+	width: var(--button-width);
+	height: var(--button-height);
+	border-radius: 0.2em;
+	text-align: center;
+}
+
+#controller-configuration {
+	display: none;
+}
