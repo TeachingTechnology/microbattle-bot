@@ -1,4 +1,4 @@
-const UPDATE_PERIOD = 100; // ms
+const UPDATE_PERIOD = 25; // ms
 const DECIMAL_PLACES = 3;
 
 const x_feedback = document.getElementById('x-feedback');

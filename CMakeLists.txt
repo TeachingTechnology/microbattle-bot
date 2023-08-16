@@ -10,37 +10,12 @@ set(PICO_BOARD pico_w)
 
 pico_sdk_init()
 
-add_custom_command(
-	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/index_html.h
-	COMMAND xxd -i index.html > ${CMAKE_CURRENT_BINARY_DIR}/index_html.h
-	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/index.html
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
-add_custom_command(
-	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/index_js.h
-	COMMAND xxd -i index.js > ${CMAKE_CURRENT_BINARY_DIR}/index_js.h
-	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/index.js
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
-add_custom_command(
-	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/index_css.h
-	COMMAND xxd -i index.css > ${CMAKE_CURRENT_BINARY_DIR}/index_css.h
-	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/index.css
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
 add_executable(firmware
 	firmware.c
-	index_html.h
-	index_js.h
-	index_css.h
 )
 
 target_include_directories(firmware PRIVATE
 	${CMAKE_CURRENT_LIST_DIR}
-	${CMAKE_CURRENT_BINARY_DIR}
 )
 
 target_compile_definitions(firmware PRIVATE
