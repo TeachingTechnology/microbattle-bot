@@ -12,20 +12,20 @@ pico_sdk_init()
 
 add_executable(firmware
 	firmware.c
+	dhcpserver/dhcpserver.c
 )
 
 target_include_directories(firmware PRIVATE
 	${CMAKE_CURRENT_LIST_DIR}
-)
-
-target_compile_definitions(firmware PRIVATE
-	WIFI_SSID=\"${WIFI_SSID}\"
-	WIFI_PASSWORD=\"${WIFI_PASSWORD}\"
+	${CMAKE_CURRENT_LIST_DIR}/dhcpserver
 )
 
 target_link_libraries(firmware
 	pico_cyw43_arch_lwip_poll
 	pico_stdlib
+	pico_unique_id
+	hardware_gpio
+	hardware_pwm
 )
 
 add_compile_options(-Wall)

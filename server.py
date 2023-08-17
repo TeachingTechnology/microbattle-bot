@@ -7,7 +7,7 @@ files = {
 	'index.css': 'text/css'
 }
 
-PICO_IP = "192.168.0.72"
+PICO_IP = "192.168.4.1"
 PICO_PORT = 12345
 
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as to_pico:
