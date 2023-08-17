@@ -9,6 +9,7 @@
 #include "pico/cyw43_arch.h"
 #include "pico/stdlib.h"
 #include "pico/unique_id.h"
+#include "pico/time.h"
 #include "hardware/pwm.h"
 #include "hardware/clocks.h"
 
@@ -49,6 +50,9 @@ int main() {
 
     stdio_init_all();
 	clocks_init();
+
+	// delay to allow for serial terminal connection
+	sleep_ms(2500);
 
 	{ // PWM setup
 		uint32_t sys_freq = clock_get_hz(clk_sys);

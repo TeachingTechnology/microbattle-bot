@@ -24,11 +24,13 @@ target_link_libraries(firmware
 	pico_cyw43_arch_lwip_poll
 	pico_stdlib
 	pico_unique_id
+	pico_time
 	hardware_gpio
 	hardware_pwm
 )
 
 add_compile_options(-Wall)
 pico_enable_stdio_uart(firmware 1)
+pico_enable_stdio_usb(firmware 1)
 pico_add_extra_outputs(firmware)
 
