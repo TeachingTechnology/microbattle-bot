@@ -23,9 +23,9 @@
 
 #define UDP_PORT 12345
 
-#define PIN_X 10
-#define PIN_Y 11
-#define PIN_B 12
+#define PIN_X 26
+#define PIN_Y 27
+#define PIN_B 28
 
 #define PWM_FREQ 50
 #define PWM_RES 65536 // 2 ^ 16
