@@ -30,6 +30,8 @@
 #define PWM_FREQ 50
 #define PWM_RES 65536 // 2 ^ 16
 #define PWM_FRAC 16   // 2 ^ 4
+#define PWM_PERIOD (1000 / PWM_FREQ)
+#define PWM_SCALE (1 / PWM_PERIOD)
 
 #define SSID_LEN (2 * PICO_UNIQUE_BOARD_ID_SIZE_BYTES + 1)
 
@@ -131,9 +133,9 @@ void receive(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *ad
 
 	pbuf_free(p);
 
-	pwm_set_gpio_level(PIN_X, (uint16_t)((state.x + 1) / 2 * pwm_wrap));
-	pwm_set_gpio_level(PIN_Y, (uint16_t)((state.y + 1) / 2 * pwm_wrap));
-	pwm_set_gpio_level(PIN_B, (uint16_t)(state.b * pwm_wrap));
+	pwm_set_gpio_level(PIN_X, (uint16_t)(((state.x + 1) / 2 + 1) * PWM_SCALE * pwm_wrap));
+	pwm_set_gpio_level(PIN_Y, (uint16_t)(((state.y + 1) / 2 + 1) * PWM_SCALE * pwm_wrap));
+	pwm_set_gpio_level(PIN_B, (uint16_t)((state.b + 1) * PWM_SCALE * pwm_wrap));
 
 	DEBUG_printf("X[%f] Y[%f] B[%f]\n", state.x, state.y, state.b);
 }
