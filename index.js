@@ -169,6 +169,7 @@ function update_select(select, array) {
 // immediately invoked to start update callbacks
 (function gamepad_update() {
 	if (gamepad !== undefined) {
+		gamepad = get_gamepad_by_index(parseInt(controller_select.value));
 		let x = gamepad.axes[x_axis.value];
 		let y = gamepad.axes[y_axis.value];
 		x = Math.abs(x) >= x_deadzone.valueAsNumber ? x : 0;

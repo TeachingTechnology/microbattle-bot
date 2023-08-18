@@ -131,10 +131,16 @@ void receive(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *ad
 
 	pbuf_free(p);
 
-	pwm_set_gpio_level(PIN_X, (uint16_t)(((state.x + 1) / 2 + 1) * pwm_wrap / PWM_FREQ));
-	pwm_set_gpio_level(PIN_Y, (uint16_t)(((state.y + 1) / 2 + 1) * pwm_wrap / PWM_FREQ));
-	pwm_set_gpio_level(PIN_B, (uint16_t)((state.b + 1) * pwm_wrap / PWM_FREQ));
+	float x = ((state.x + 1) / 2 + 1) / PWM_FREQ;
+	float y = ((state.y + 1) / 2 + 1) / PWM_FREQ;
+	float b = (state.b + 1) / PWM_FREQ;
 
 	DEBUG_printf("X[%f] Y[%f] B[%f]\n", state.x, state.y, state.b);
+	DEBUG_printf("PWM_X[%f] PWM_Y[%f] PWM_B[%f]\n", x, y, b);
+
+	pwm_set_gpio_level(PIN_X, x * pwm_wrap);
+	pwm_set_gpio_level(PIN_Y, y * pwm_wrap);
+	pwm_set_gpio_level(PIN_B, b * pwm_wrap);
+
 }
 
