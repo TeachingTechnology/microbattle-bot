@@ -5,89 +5,57 @@
 		<link href="index.css" rel="stylesheet" />
 		<script type="module" src="index.js"></script>
 	</head>
-
     <body>
 		<h1>BattleBot Dashboard</h1>
-
 		If your controller isn't showing up try pushing a button on it.
-
 		<div>
 			<h3>Controller</h3>
 			<select id="controller-select">
 				<option value="keyboard">Keyboard</option>
 			</select>
 		</div>
-
 		<div>
 			<h2>Feedback</h2>
-
 			<div>
 				<h3>X Axis</h3>
-
-				<div class="axis-background">
-					<div class="axis-dot-holder">
-						<div class="axis-dot" id="x-feedback"></div>
-					</div>
-				</div>
-				<label id="x-value">0.000</label>
+				<div class="axis-background"><div class="axis-dot-holder"><div class="axis-dot" id="x-feedback"></div></div></div><label id="x-value">0.000</label>
 			</div>
-
 			<div>
 				<h3>Y Axis</h3>
-
-				<div class="axis-background">
-					<div class="axis-dot-holder">
-						<div class="axis-dot" id="y-feedback"></div>
-					</div>
-				</div>
-				<label id="y-value">0.000</label>
+				<div class="axis-background"><div class="axis-dot-holder"><div class="axis-dot" id="y-feedback"></div></div></div><label id="y-value">0.000</label>
 			</div>
-
 			<div>
 				<h3>Button</h3>
-
-				<div class="button" id="b-feedback"></div>
-				<label id="b-value">0</label>
+				<div class="button" id="b-feedback"></div><label for="b-feedback" id="b-value"> 0</label>
 			</div>
 		</div>
-
+		<div>
+			<h2>Axis Configuration</h2>
+			<div>
+				<h3>Invert Axis</h3>
+				<div><label><input type="checkbox" id="x-invert"> X</label></div>
+				<div><label><input type="checkbox" id="y-invert"> Y</label></div>
+			</div>
+			<div>
+				<h3>Axis Limits</h3>
+				<div><label>X-min: <input type="number" id="x-min" min="-1" max="1" step="0.01" value="-1.00"></label></div>
+				<div><label>X-max: <input type="number" id="x-max" min="-1" max="1" step="0.01" value="1.00"></label></div>
+				<div><label>Y-min: <input type="number" id="y-min" min="-1" max="1" step="0.01" value="-1.00"></label></div>
+				<div><label>Y-max: <input type="number" id="y-max" min="-1" max="1" step="0.01" value="1.00"></label></div>
+			</div>
+		</div>
 		<div id="controller-configuration">
 			<h2>Controller Configuration</h2>
-
-			<div>
-				<h3>Deadzone Radii</h3>
-
-				<div>
-					<label>X: </label>
-					<input type="number" id="x-deadzone" min="0" max="1" step="0.01" value="0.1">
-				</div>
-
-				<div>
-					<label>Y: </label>
-					<input type="number" id="y-deadzone" min="0" max="1" step="0.01" value="0.1">
-				</div>
-			</div>
-
 			<div>
 				<h3>Input Selection</h3>
-
-				<div>
-					<label>X-Axis: </label>
-					<select id="x-axis">
-					</select>
-				</div>
-
-				<div>
-					<label>Y-Axis: </label>
-					<select id="y-axis">
-					</select>
-				</div>
-
-				<div>
-					<label>Button: </label>
-					<select id="button">
-					</select>
-				</div>
+				<div><label>X-Axis: </label><select id="x-axis"></select></div>
+				<div><label>Y-Axis: </label><select id="y-axis"></select></div>
+				<div><label>Button: </label><select id="button"></select></div>
+			</div>
+			<div>
+				<h3>Deadzone Radii</h3>
+				<div><label>X: <input type="number" id="x-deadzone" min="0" max="1" step="0.01" value="0.10"></label></div>
+				<div><label>Y: <input type="number" id="y-deadzone" min="0" max="1" step="0.01" value="0.10"></label></div>
 			</div>
 		</div>
     </body>

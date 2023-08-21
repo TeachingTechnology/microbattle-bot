@@ -12,6 +12,14 @@ const b_value = document.getElementById('b-value');
 const x_deadzone = document.getElementById('x-deadzone');
 const y_deadzone = document.getElementById('y-deadzone');
 
+const x_invert = document.getElementById('x-invert');
+const y_invert = document.getElementById('y-invert');
+
+const x_min = document.getElementById('x-min');
+const x_max = document.getElementById('x-max');
+const y_min = document.getElementById('y-min');
+const y_max = document.getElementById('y-max');
+
 const controller_select = document.getElementById('controller-select');
 const controller_configuration = document.getElementById('controller-configuration');
 
@@ -53,10 +61,20 @@ function update_ui() {
 	b_feedback.style['background-color'] = state.b ? "black" : "lightgrey";
 }
 
+function apply_state_constraints() {
+	state.x = state.x < x_max.valueAsNumber ? state.x : x_max.valueAsNumber;
+	state.y = state.y < y_max.valueAsNumber ? state.y : y_max.valueAsNumber;
+	state.x = state.x > x_min.valueAsNumber ? state.x : x_min.valueAsNumber;
+	state.y = state.y > y_min.valueAsNumber ? state.y : y_min.valueAsNumber;
+	state.x *= x_invert.checked ? -1 : 1;
+	state.y *= y_invert.checked ? -1 : 1;
+}
+
 function update_state_from_keyboard() {
 	state.x = keyboard.r - keyboard.l;
 	state.y = keyboard.d - keyboard.u;
 	state.b = keyboard.b;
+	apply_state_constraints();
 	update_ui();
 }
 
@@ -172,11 +190,14 @@ function update_select(select, array) {
 		gamepad = get_gamepad_by_index(parseInt(controller_select.value));
 		let x = gamepad.axes[x_axis.value];
 		let y = gamepad.axes[y_axis.value];
+		// apply deadzone
 		x = Math.abs(x) >= x_deadzone.valueAsNumber ? x : 0;
 		y = Math.abs(y) >= y_deadzone.valueAsNumber ? y : 0;
+		// update state and UI
 		state.x = x;
 		state.y = y;
 		state.b = gamepad.buttons[button.value].value;
+		apply_state_constraints();
 		update_ui();
 	}
 
