@@ -19,6 +19,8 @@ const x_min = document.getElementById('x-min');
 const x_max = document.getElementById('x-max');
 const y_min = document.getElementById('y-min');
 const y_max = document.getElementById('y-max');
+const b_on  = document.getElementById('b-on');
+const b_off = document.getElementById('b-off');
 
 const controller_select = document.getElementById('controller-select');
 const controller_configuration = document.getElementById('controller-configuration');
@@ -58,7 +60,7 @@ function update_ui() {
 	b_value.textContent = state.b;
 	x_feedback.style.left = state_to_percent(state.x);
 	y_feedback.style.left = state_to_percent(state.y);
-	b_feedback.style['background-color'] = state.b ? "black" : "lightgrey";
+	b_feedback.style['background-color'] = state.b == b_on.valueAsNumber ? "black" : "lightgrey";
 }
 
 function apply_state_constraints() {
@@ -68,6 +70,7 @@ function apply_state_constraints() {
 	state.y = state.y > y_min.valueAsNumber ? state.y : y_min.valueAsNumber;
 	state.x *= x_invert.checked ? -1 : 1;
 	state.y *= y_invert.checked ? -1 : 1;
+	state.b = state.b ? b_on.valueAsNumber: b_off.valueAsNumber;
 }
 
 function update_state_from_keyboard() {

@@ -51,9 +51,6 @@ int main() {
     stdio_init_all();
 	clocks_init();
 
-	// delay to allow for serial terminal connection
-	sleep_ms(2500);
-
 	{ // PWM setup
 		uint32_t sys_freq = clock_get_hz(clk_sys);
 		DEBUG_printf("clk_sys: %d\n", sys_freq);
@@ -79,9 +76,9 @@ int main() {
 			uint channel = pwm_gpio_to_channel(pins[i]);
 			pwm_set_clkdiv_int_frac(slice, int_divider, frac_divider);
 			pwm_set_wrap(slice, pwm_wrap);
-			pwm_set_chan_level(slice, channel, pwm_wrap / 2);
+			pwm_set_chan_level(slice, channel, (1.5 / PWM_FREQ) * pwm_wrap);
 			pwm_set_enabled(slice, true);
-			DEBUG_printf("Setup PWM pin %d for 50%% duty cycle at 50 Hz.\n", pins[i]);
+			DEBUG_printf("Setup PWM pin %d for 1.5ms on at 50 Hz.\n", pins[i]);
 		}
 
 		DEBUG_printf("PWM setup complete.\n"); 
