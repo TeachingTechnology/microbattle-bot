@@ -31,8 +31,6 @@
 #define PWM_RES 65536 // 2 ^ 16
 #define PWM_FRAC 16   // 2 ^ 4
 
-#define SSID_LEN (2 * PICO_UNIQUE_BOARD_ID_SIZE_BYTES + 1)
-
 void receive(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr, u16_t port);
 
 struct State {
@@ -87,9 +85,8 @@ int main() {
 	CHECK(cyw43_arch_init(), "Failed to initialise cyw43.\n");
 
 	{ // wifi ap mode setup
-		char ssid[SSID_LEN];
-		char password[] = "password";
-		pico_get_unique_board_id_string(ssid, SSID_LEN);
+		char ssid[] = "SSID STAND IN, FILL IN HERE";
+		char password[] = "PASSWORD STAND IN, FILL IN HERE";
 		cyw43_arch_enable_ap_mode(ssid, password, CYW43_AUTH_WPA2_AES_PSK);
 		DEBUG_printf("WIFI AP setup at with SSID: %s\n", ssid);
 	}
